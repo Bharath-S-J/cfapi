@@ -1,5 +1,5 @@
 {
-  "name": "cfapi",
+  "name": "@bharathsj/cfapi",
   "version": "1.0.0",
   "description": "⚡ Code-Free API generator from JSON schema. Supports mock data or MongoDB (Mongoose).",
   "main": "index.js",

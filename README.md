@@ -209,7 +209,7 @@ You can use **cfapi** either by installing it globally from npm or by cloning an
 ### Option 1: Install from npm (recommended)
 
 ```bash
-npm install -g cfapi
+npm install -g @bharathsj/cfapi
 ```
 
 Once installed globally, generate your API from a schema:
