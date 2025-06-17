@@ -73,16 +73,42 @@ cfapi -t add -s ./new-models.json -o ./my-api -e mongo
 ## ⚠ Limitations
 
 * PATCH only supports flat fields (nested updates are not allowed).
-
 * No built-in support for authentication, pagination, or advanced filtering.
-
 * Malformed schemas may result in validation errors or undefined behavior.
-
 * The id field is handled internally – ensure your schema follows strict rules as demonstrated in the examples.
-
 * Validation is extremely strict – it will reject any input that does not exactly match the schema definition. No extra fields are allowed.
 
 ---
+
+## 📦 Example Outputs
+
+cfapi generates complete, ready-to-run REST API scaffolding based on your schema and selected engine. Below are **four full examples** demonstrating both the `mock` and `mongo` engines across two different schemas:
+
+### 🧪 Sample Schema 1: User API
+
+* ✨ Demonstrates a **basic schema** with string, number, boolean, date, array, enum, and nested object types.
+* ✅ Both mock and MongoDB engines.
+* 📘 Includes auto-generated OpenAPI spec and route/controller/model/middleware files.
+
+| Mock Engine Output                                                                      | MongoDB Engine Output                                                                     |
+| --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| ![Mock Output](https://github.com/Bharath-S-J/cfapi/blob/main/images/mock.png?raw=true) | ![Mongo Output](https://github.com/Bharath-S-J/cfapi/blob/main/images/mongo.png?raw=true) |
+
+* 🔗 [`sample-schema1-mock`](https://github.com/Bharath-S-J/cfapi/tree/main/example-outputs/sample-schema1-mock)
+* 🔗 [`sample-schema1-mongo`](https://github.com/Bharath-S-J/cfapi/tree/main/example-outputs/sample-schema1-mongo)
+
+---
+
+### 🏢 Sample Schema 2: User + Company (Nested + Ref)
+
+* 🔗 Shows a **complex schema** with multiple models and references (`ref`), nested object fields, and validations.
+* 🌱 Highlights `mock` vs `mongo` behavior with relational handling.
+* 📘 Each version includes OpenAPI schema, working routes, and validation middleware.
+* 🔗 [`sample-schema2-mock`](https://github.com/Bharath-S-J/cfapi/tree/main/example-outputs/sample-schema2-mock)
+* 🔗 [`sample-schema2-mongo`](https://github.com/Bharath-S-J/cfapi/tree/main/example-outputs/sample-schema2-mongo)
+
+---
+
 
 ## 📁 Output Structure
 
