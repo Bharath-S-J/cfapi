@@ -1,0 +1,47 @@
+{
+  "user": {
+    "type": "object",
+    "timestamps": true,
+    "properties": {
+      "username": { "type": "string", "minLength": 3, "unique": true },
+      "email": { "type": "email", "required": true, "unique": true },
+      "age": { "type": "integer", "minimum": 18 },
+      "status": { "type": "string", "enum": ["active", "inactive", "pending"] },
+      "password": { "type": "string", "pattern": "^(?=.*\\d).{8,}$" },
+      "profile": {
+        "type": "object",
+        "properties": {
+          "bio": "string",
+          "dob": "date",
+          "social": {
+            "type": "object",
+            "properties": {
+              "twitter": "string",
+              "linkedin": "string"
+            }
+          }
+        }
+      },
+      "roles": {
+        "type": "array",
+        "items": { "type": "string" },
+        "minItems": 1
+      },
+      "company": { "type": "ref", "model": "company" }
+    }
+  },
+  "company": {
+    "type": "object",
+    "properties": {
+      "name": { "type": "string", "required": true },
+      "website": { "type": "url" },
+      "location": {
+        "type": "object",
+        "properties": {
+          "city": "string",
+          "country": "string"
+        }
+      }
+    }
+  }
+}

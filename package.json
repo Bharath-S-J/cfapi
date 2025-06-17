@@ -1,0 +1,49 @@
+{
+  "name": "cfapi",
+  "version": "1.0.0",
+  "description": "⚡ Code-Free API generator from JSON schema. Supports mock data or MongoDB (Mongoose).",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "cfapi": "./bin/index.js"
+  },
+  "scripts": {
+    "test": "echo \"No tests specified.\" && exit 0"
+  },
+  "keywords": [
+    "cli",
+    "api",
+    "generator",
+    "mongoose",
+    "mock",
+    "schema",
+    "json",
+    "scaffold",
+    "openapi",
+    "validation"
+  ],
+  "author": "Bharath S J",
+  "license": "MIT",
+  "files": [
+    "bin/",
+    "utils/",
+    "engines/",
+    "core/",
+    "generators/",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Bharath-S-J/cfapi.git"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^9.8.0",
+    "chalk": "^5.4.1",
+    "mongoose": "^8.15.2",
+    "pluralize": "^8.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.29.0",
+    "nodemon": "^3.1.10"
+  }
+}

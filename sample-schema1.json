@@ -1,0 +1,67 @@
+{
+  "user": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "uuid"
+      },
+      "username": {
+        "type": "string",
+        "required": true,
+        "unique": true,
+        "minLength": 3,
+        "maxLength": 20
+      },
+      "email": {
+        "type": "email",
+        "required": true,
+        "unique": true
+      },
+      "age": {
+        "type": "integer",
+        "minimum": 18,
+        "maximum": 100
+      },
+      "isActive": {
+        "type": "boolean"
+      },
+      "role": {
+        "type": "string",
+        "enum": ["user", "admin", "moderator"]
+      },
+      "website": {
+        "type": "url"
+      },
+      "bio": {
+        "type": "string",
+        "maxLength": 500
+      },
+      "tags": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "minItems": 1,
+        "maxItems": 5
+      },
+      "address": {
+        "type": "object",
+        "properties": {
+          "street": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string",
+            "pattern": "^[0-9]{5}$"
+          }
+        }
+      },
+      "createdAt": {
+        "type": "date"
+      }
+    }
+  }
+}

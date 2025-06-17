@@ -1,0 +1,42 @@
+output*
+
+node_modules
+package-lock.json
+
+# Node.js
+node_modules/
+.env
+.env.local
+.DS_Store
+dist/
+coverage/
+logs/
+*.log
+npm-debug.log*
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Optional output folders
+openapi-models/
+mock-data/
+tmp/
+.cache/
+
+# CLI build artifacts
+bin/*.log
+*.bak
+
+# Lock files (if not using them)
+# package-lock.json
+# yarn.lock
+
+# Misc
+*.tmp
+*.generated.*
