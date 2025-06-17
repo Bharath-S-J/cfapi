@@ -331,6 +331,6 @@ This is a **learning prototype** — designed to explore how far you can go with
 ## 📦 Links
 
 * 🔗 GitHub: [https://github.com/Bharath-S-J/cfapi.git](https://github.com/Bharath-S-J/cfapi.git)
-* 📦 npm: [https://npmjs.com/package/cfapi](https://npmjs.com/package/cfapi)
+* 📦 npm: [https://npmjs.com/package/@bharathsj/cfapi](https://npmjs.com/package/@bharathsj/cfapi)
 
 
