@@ -1,0 +1,8 @@
+{
+  "engine": "mongo",
+  "models": [
+    "user",
+    "company"
+  ],
+  "createdAt": "2025-06-17T09:40:14.345Z"
+}

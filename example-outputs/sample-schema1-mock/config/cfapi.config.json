@@ -1,0 +1,7 @@
+{
+  "engine": "mock",
+  "models": [
+    "user"
+  ],
+  "createdAt": "2025-06-17T09:39:22.725Z"
+}
