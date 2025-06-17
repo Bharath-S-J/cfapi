@@ -49,7 +49,6 @@ cfapi --type <generate|add> --schema <path> --output <dir> --engine <mock|mongo>
 ```bash
 cfapi -t generate -s ./schema.json -o ./my-api -e mock
 ```
-
 > ✅ When using the `mock` engine, **10 sample mock records** are created automatically.
 
 ### ➕ Add Model(s)
@@ -57,10 +56,14 @@ cfapi -t generate -s ./schema.json -o ./my-api -e mock
 ```bash
 cfapi -t add -s ./new-models.json -o ./my-api -e mongo
 ```
-
 > ⚠️ You cannot add a model twice — existing models will be skipped unless `--force` is used.
 
+### Help
+```bash
+cfapi --help
+```
 ---
+
 
 ## 🧠 PATCH Support: Explained
 
