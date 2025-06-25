@@ -10,10 +10,12 @@
 
 ✅ Generate a complete API with one command  
 ✅ Choose between:
+
 - `mock` engine – JSON file storage with auto-persistence
 - `mongo` engine – Mongoose ODM with full validation
 
 ✅ Auto-generates:
+
 - Controllers
 - Routes
 - Middleware validation based on constraints provided in the schema
@@ -21,19 +23,23 @@
 - OpenAPI model schemas
 
 ✅ Schema-aware:
+
 - Deeply nested objects and arrays
 - References with `ref` fields
 - Validation: `required`, `enum`, `pattern`, `minLength`, `unique`, etc.
 
 ✅ Built-in support for:
+
 - Unique constraints in both engines
 - `addModel` to extend existing APIs
 - `.cfapi.config.json` created on first run
 
 ✅ Mock engine:
+
 - Auto-generates **10 fake records** per model on creation
 
 ✅ MongoDB engine:
+
 - Uses Mongoose schemas with `timestamps`, `ref`, and full validation logic
 
 ---
@@ -72,11 +78,11 @@ cfapi -t add -s ./new-models.json -o ./my-api -e mongo
 
 ## ⚠ Limitations
 
-* PATCH only supports flat fields (nested updates are not allowed).
-* No built-in support for authentication, pagination, or advanced filtering.
-* Malformed schemas may result in validation errors or undefined behavior.
-* The id field is handled internally – ensure your schema follows strict rules as demonstrated in the examples.
-* Validation is extremely strict – it will reject any input that does not exactly match the schema definition. No extra fields are allowed.
+- PATCH only supports flat fields (nested updates are not allowed).
+- No built-in support for authentication, pagination, or advanced filtering.
+- Malformed schemas may result in validation errors or undefined behavior.
+- The id field is handled internally – ensure your schema follows strict rules as demonstrated in the examples.
+- Validation is extremely strict – it will reject any input that does not exactly match the schema definition. No extra fields are allowed.
 
 ---
 
@@ -86,29 +92,28 @@ cfapi generates complete, ready-to-run REST API scaffolding based on your schema
 
 ### 🧪 Sample Schema 1: User API
 
-* ✨ Demonstrates a **basic schema** with string, number, boolean, date, array, enum, and nested object types.
-* ✅ Both mock and MongoDB engines.
-* 📘 Includes auto-generated OpenAPI spec and route/controller/model/middleware files.
+- ✨ Demonstrates a **basic schema** with string, number, boolean, date, array, enum, and nested object types.
+- ✅ Both mock and MongoDB engines.
+- 📘 Includes auto-generated OpenAPI spec and route/controller/model/middleware files.
 
 | Mock Engine Output                                                                      | MongoDB Engine Output                                                                     |
 | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
 | ![Mock Output](https://github.com/Bharath-S-J/cfapi/blob/main/images/mock.png?raw=true) | ![Mongo Output](https://github.com/Bharath-S-J/cfapi/blob/main/images/mongo.png?raw=true) |
 
-* 🔗 [`sample-schema1-mock`](https://github.com/Bharath-S-J/cfapi/tree/main/example-outputs/sample-schema1-mock)
-* 🔗 [`sample-schema1-mongo`](https://github.com/Bharath-S-J/cfapi/tree/main/example-outputs/sample-schema1-mongo)
+- 🔗 [`sample-schema1-mock`](https://github.com/Bharath-S-J/cfapi/tree/main/example-outputs/sample-schema1-mock)
+- 🔗 [`sample-schema1-mongo`](https://github.com/Bharath-S-J/cfapi/tree/main/example-outputs/sample-schema1-mongo)
 
 ---
 
 ### 🏢 Sample Schema 2: User + Company (Nested + Ref)
 
-* 🔗 Shows a **complex schema** with multiple models and references (`ref`), nested object fields, and validations.
-* 🌱 Highlights `mock` vs `mongo` behavior with relational handling.
-* 📘 Each version includes OpenAPI schema, working routes, and validation middleware.
-* 🔗 [`sample-schema2-mock`](https://github.com/Bharath-S-J/cfapi/tree/main/example-outputs/sample-schema2-mock)
-* 🔗 [`sample-schema2-mongo`](https://github.com/Bharath-S-J/cfapi/tree/main/example-outputs/sample-schema2-mongo)
+- 🔗 Shows a **complex schema** with multiple models and references (`ref`), nested object fields, and validations.
+- 🌱 Highlights `mock` vs `mongo` behavior with relational handling.
+- 📘 Each version includes OpenAPI schema, working routes, and validation middleware.
+- 🔗 [`sample-schema2-mock`](https://github.com/Bharath-S-J/cfapi/tree/main/example-outputs/sample-schema2-mock)
+- 🔗 [`sample-schema2-mongo`](https://github.com/Bharath-S-J/cfapi/tree/main/example-outputs/sample-schema2-mongo)
 
 ---
-
 
 ## 📁 Output Structure
 
@@ -134,73 +139,72 @@ my-api/
 
 ```json
 {
-    "user": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "uuid"
+  "user": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "uuid"
+      },
+      "username": {
+        "type": "string",
+        "required": true,
+        "unique": true,
+        "minLength": 3,
+        "maxLength": 20
+      },
+      "email": {
+        "type": "email",
+        "required": true,
+        "unique": true
+      },
+      "age": {
+        "type": "integer",
+        "minimum": 18,
+        "maximum": 100
+      },
+      "isActive": {
+        "type": "boolean"
+      },
+      "role": {
+        "type": "string",
+        "enum": ["user", "admin", "moderator"]
+      },
+      "website": {
+        "type": "url"
+      },
+      "bio": {
+        "type": "string",
+        "maxLength": 500
+      },
+      "tags": {
+        "type": "array",
+        "items": {
+          "type": "string"
         },
-        "username": {
-          "type": "string",
-          "required": true,
-          "unique": true,
-          "minLength": 3,
-          "maxLength": 20
-        },
-        "email": {
-          "type": "email",
-          "required": true,
-          "unique": true
-        },
-        "age": {
-          "type": "integer",
-          "minimum": 18,
-          "maximum": 100
-        },
-        "isActive": {
-          "type": "boolean"
-        },
-        "role": {
-          "type": "string",
-          "enum": ["user", "admin", "moderator"]
-        },
-        "website": {
-          "type": "url"
-        },
-        "bio": {
-          "type": "string",
-          "maxLength": 500
-        },
-        "tags": {
-          "type": "array",
-          "items": {
+        "minItems": 1,
+        "maxItems": 5
+      },
+      "address": {
+        "type": "object",
+        "properties": {
+          "street": {
             "type": "string"
           },
-          "minItems": 1,
-          "maxItems": 5
-        },
-        "address": {
-          "type": "object",
-          "properties": {
-            "street": {
-              "type": "string"
-            },
-            "city": {
-              "type": "string"
-            },
-            "postalCode": {
-              "type": "string",
-              "pattern": "^[0-9]{5}$"
-            }
+          "city": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string",
+            "pattern": "^[0-9]{5}$"
           }
-        },
-        "createdAt": {
-          "type": "date"
         }
+      },
+      "createdAt": {
+        "type": "date"
       }
     }
   }
-
+}
 ```
 
 ---
@@ -209,16 +213,16 @@ my-api/
 
 | Feature                  | Supported | Notes                                                                 |
 | ------------------------ | --------- | --------------------------------------------------------------------- |
-| `type`                   | ✅         | string, number, boolean, integer, email, uuid, url, date, object, ref |
-| `required`               | ✅         | Explicitly mark fields as required                                    |
-| `minLength`, `maxLength` | ✅         | Only for strings                                                      |
-| `minimum`, `maximum`     | ✅         | Only for numbers                                                      |
-| `pattern`                | ✅         | Use string-form regex (e.g. `"^\\d+$"`)                               |
-| `enum`                   | ✅         | Array of allowed values                                               |
-| `unique`                 | ✅         | Works in both mock and mongo engines                                  |
-| `default`                | ✅         | Optional default values                                               |
-| `minItems`, `maxItems`   | ✅         | For arrays                                                            |
-| `timestamps`             | ✅         | Adds `createdAt` and `updatedAt` automatically                        |
+| `type`                   | ✅        | string, number, boolean, integer, email, uuid, url, date, object, ref |
+| `required`               | ✅        | Explicitly mark fields as required                                    |
+| `minLength`, `maxLength` | ✅        | Only for strings                                                      |
+| `minimum`, `maximum`     | ✅        | Only for numbers                                                      |
+| `pattern`                | ✅        | Use string-form regex (e.g. `"^\\d+$"`)                               |
+| `enum`                   | ✅        | Array of allowed values                                               |
+| `unique`                 | ✅        | Works in both mock and mongo engines                                  |
+| `default`                | ✅        | Optional default values                                               |
+| `minItems`, `maxItems`   | ✅        | For arrays                                                            |
+| `timestamps`             | ✅        | Adds `createdAt` and `updatedAt` automatically                        |
 
 ---
 
@@ -309,6 +313,7 @@ npm start
   },
 
   "company": {
+    "type": "object",
     "name": { "type": "string", "required": true },
     "website": { "type": "url" },
     "location": {
@@ -356,7 +361,5 @@ This is a **learning prototype** — designed to explore how far you can go with
 
 ## 📦 Links
 
-* 🔗 GitHub: [https://github.com/Bharath-S-J/cfapi.git](https://github.com/Bharath-S-J/cfapi.git)
-* 📦 npm: [https://npmjs.com/package/@bharathsj/cfapi](https://npmjs.com/package/@bharathsj/cfapi)
-
-
+- 🔗 GitHub: [https://github.com/Bharath-S-J/cfapi.git](https://github.com/Bharath-S-J/cfapi.git)
+- 📦 npm: [https://npmjs.com/package/@bharathsj/cfapi](https://npmjs.com/package/@bharathsj/cfapi)

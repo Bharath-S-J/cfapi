@@ -1,115 +1,92 @@
-import path from 'node:path';
-import { safeWrite } from '../../utils/fileUtils.js';
-import logger from '../../utils/logger.js';
+import path from "node:path";
+import fs from "node:fs/promises";
+import logger from "../../utils/logger.js";
 
-const INDENT = (level = 1) => '  '.repeat(level);
+const INDENT = (level = 1) => "  ".repeat(level);
 
-// Convert schema field to string
-function convertField(field, indent = 2) {
-  const lines = [];
+const mapType = (type) => {
+  const map = {
+    string: "String",
+    number: "Number",
+    integer: "Number",
+    boolean: "Boolean",
+    date: "Date",
+    email: "String",
+    uuid: "String",
+    url: "String",
+    ref: "Schema.Types.ObjectId",
+  };
+  return map[type] || "Schema.Types.Mixed";
+};
+
+const convertField = (field, indent = 2) => {
   const i = INDENT(indent);
 
-  // Handle references
-  if (field.type === 'ref') {
-    const options = [];
-    options.push(`type: Schema.Types.ObjectId`);
-    options.push(`ref: "${field.model}"`);
-    if (field.required) options.push(`required: true`);
-    if (field.unique) options.push(`unique: true`);
-    if (field.default !== undefined) options.push(`default: ${JSON.stringify(field.default)}`);
-    return `{\n${i}${options.join(`,\n${i}`)}\n${INDENT(indent - 1)}}`;
+  // ----- Ref -----
+  if (field.type === "ref") {
+    const lines = [`type: Schema.Types.ObjectId`, `ref: "${field.model}"`];
+    if (field.required) lines.push("required: true");
+    if (field.unique) lines.push("unique: true");
+    if (field.default !== undefined) {
+      lines.push(`default: ${JSON.stringify(field.default)}`);
+    }
+    return `{\n${i}${lines.join(`,\n${i}`)}\n${INDENT(indent - 1)}}`;
   }
 
-  // Handle arrays
-  if (field.type === 'array') {
-    const itemStr = convertField(field.items || { type: 'string' }, indent + 2);
-    const arrayField = `[\n${INDENT(indent)}${itemStr}\n${INDENT(indent - 1)}]`;
-    const constraints = [];
+  // ----- Array -----
+  if (field.type === "array") {
+    const inner = convertField(field.items, indent + 2);
+    const isObjectArray = field.items.type === "object";
+    const base = isObjectArray
+      ? `new Schema(${inner}, { _id: false, versionKey: false })`
+      : inner;
 
-    if (field.required) constraints.push(`required: true`);
-    if (field.minItems !== undefined)
-      constraints.push(`validate: [v => v.length >= ${field.minItems}, 'Minimum ${field.minItems} items required']`);
-    if (field.maxItems !== undefined)
-      constraints.push(`validate: [v => v.length <= ${field.maxItems}, 'Maximum ${field.maxItems} items allowed']`);
-
-    return constraints.length
-      ? `{\n${i}type: ${arrayField},\n${i}${constraints.join(`,\n${i}`)}\n${INDENT(indent - 1)}}`
-      : arrayField;
+    const lines = [`type: [${base}]`];
+    if (field.required) lines.push("required: true");
+    if (field.minItems !== undefined) {
+      lines.push(
+        `validate: [v => v.length >= ${field.minItems}, "Minimum ${field.minItems} items required"]`
+      );
+    }
+    if (field.maxItems !== undefined) {
+      lines.push(
+        `validate: [v => v.length <= ${field.maxItems}, "Maximum ${field.maxItems} items allowed"]`
+      );
+    }
+    return `{\n${i}${lines.join(`,\n${i}`)}\n${INDENT(indent - 1)}}`;
   }
 
-  // Handle nested objects
-  if (field.type === 'object' && field.properties) {
-    const nestedProps = Object.entries(field.properties)
-      .map(([key, val]) => `${INDENT(indent)}${key}: ${convertField(val, indent + 1)}`)
-      .join(',\n');
-    const objectSchema = `new Schema({\n${nestedProps}\n${INDENT(indent - 1)}})`;
-    return field.required ? `{ type: ${objectSchema}, required: true }` : objectSchema;
+  // ----- Object -----
+  if (field.type === "object") {
+    const fields = Object.entries(field.properties || {})
+      .map(
+        ([k, v]) => `${INDENT(indent + 1)}${k}: ${convertField(v, indent + 2)}`
+      )
+      .join(",\n");
+    return `new Schema({\n${fields}\n${i}}, { _id: false, versionKey: false })`;
   }
 
-  // Handle primitives
-  const fieldOptions = [];
-  fieldOptions.push(`type: ${getType(field.type)}`);
-  if (field.required) fieldOptions.push(`required: true`);
-  if (field.unique) fieldOptions.push(`unique: true`);
-  if (field.default !== undefined) fieldOptions.push(`default: ${JSON.stringify(field.default)}`);
-
-  if (['string', 'email', 'url', 'uuid'].includes(field.type)) {
-    if (field.minLength !== undefined) fieldOptions.push(`minlength: ${field.minLength}`);
-    if (field.maxLength !== undefined) fieldOptions.push(`maxlength: ${field.maxLength}`);
-    if (field.pattern) fieldOptions.push(`match: ${formatRegex(field.pattern)}`);
-    if (field.enum) fieldOptions.push(`enum: ${JSON.stringify(field.enum)}`);
+  // ----- Primitives (string, number, etc.) -----
+  const lines = [`type: ${mapType(field.type)}`];
+  if (field.required) lines.push("required: true");
+  if (field.unique) lines.push("unique: true");
+  if (field.default !== undefined) {
+    lines.push(`default: ${JSON.stringify(field.default)}`);
   }
+  if (field.enum) lines.push(`enum: ${JSON.stringify(field.enum)}`);
+  if (field.minLength) lines.push(`minlength: ${field.minLength}`);
+  if (field.maxLength) lines.push(`maxlength: ${field.maxLength}`);
+  if (field.minimum) lines.push(`min: ${field.minimum}`);
+  if (field.maximum) lines.push(`max: ${field.maximum}`);
+  if (field.pattern) lines.push(`match: ${new RegExp(field.pattern)}`);
 
-  if (['number', 'integer'].includes(field.type)) {
-    if (field.minimum !== undefined) fieldOptions.push(`min: ${field.minimum}`);
-    if (field.maximum !== undefined) fieldOptions.push(`max: ${field.maximum}`);
-  }
+  return `{\n${i}${lines.join(`,\n${i}`)}\n${INDENT(indent - 1)}}`;
+};
 
-  if (field.type === 'date' && field.default === 'now') {
-    const idx = fieldOptions.findIndex(opt => opt.startsWith('default:'));
-    if (idx !== -1) fieldOptions.splice(idx, 1, `default: Date.now`);
-  }
-
-  return `{\n${i}${fieldOptions.join(`,\n${i}`)}\n${INDENT(indent - 1)}}`;
-}
-
-// Helper to map types
-function getType(type) {
-  switch (type) {
-    case 'string':
-    case 'email':
-    case 'url':
-    case 'uuid':
-      return 'String';
-    case 'number':
-    case 'integer':
-      return 'Number';
-    case 'boolean':
-      return 'Boolean';
-    case 'date':
-      return 'Date';
-    case 'ref':
-      return 'Schema.Types.ObjectId';
-    default:
-      return 'Schema.Types.Mixed';
-  }
-}
-
-function formatRegex(pattern) {
-  try {
-    const regex = new RegExp(pattern);
-    return regex.toString();
-  } catch {
-    return `new RegExp(${JSON.stringify(pattern)})`;
-  }
-}
-
-// Main function to generate model file
-export default async function generateModel(modelName, parsedSchema, outputDir) {
-  const schemaFields = Object.entries(parsedSchema.properties || {})
-    .filter(([key]) => key !== 'id')
-    .map(([key, value]) => `${INDENT()}${key}: ${convertField(value, 2)}`)
-    .join(',\n');
+export default async function generateModel(modelName, modelDef, outputDir) {
+  const schemaFields = Object.entries(modelDef.properties)
+    .map(([key, val]) => `${INDENT()}${key}: ${convertField(val, 2)}`)
+    .join(",\n");
 
   const code = `import mongoose from 'mongoose';
 const { Schema } = mongoose;
@@ -117,7 +94,7 @@ const { Schema } = mongoose;
 const ${modelName}Schema = new Schema({
 ${schemaFields}
 }, {
-  timestamps: true,
+  timestamps: ${modelDef.timestamps ? "true" : "false"},
   versionKey: false,
   toJSON: {
     virtuals: true,
@@ -136,7 +113,8 @@ export default ${modelName};
 export { ${modelName}Schema };
 `;
 
-  const filePath = path.join(outputDir, 'models', `${modelName}.js`);
-  await safeWrite(filePath, code);
-  logger.success(`Mongo model for ${modelName} generated.`);
+  const filePath = path.join(outputDir, "models", `${modelName}.js`);
+  await fs.mkdir(path.dirname(filePath), { recursive: true });
+  await fs.writeFile(filePath, code, "utf-8");
+  logger.success(` Model "${modelName}" generated at ${filePath}`);
 }

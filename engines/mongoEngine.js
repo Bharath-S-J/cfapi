@@ -15,10 +15,16 @@ import writeScaffolding from "../generators/mongo/writeScaffolding.js";
 import generateOpenApi from "../generators/shared/generateOpenApi.js";
 import writeOpenApiModel from "../utils/writeOpenApiModel.js";
 
-import { transformSchemaToMongooseFields } from "../utils/mongoSchemaTransformers.js";
 
 const initDirectories = async (outputDir) => {
-  const folders = ["models", "controllers", "routes", "middlewares", "config", "openapi-models"];
+  const folders = [
+    "models",
+    "controllers",
+    "routes",
+    "middlewares",
+    "config",
+    "openapi-models",
+  ];
   for (const folder of folders) {
     await ensureDir(path.join(outputDir, folder));
   }
@@ -29,19 +35,14 @@ const loadAllOpenApiModels = async (dir) => {
   const models = {};
   for (const file of files) {
     if (!file.endsWith(".json")) continue;
-    const modelName = file.slice(0, -5); 
+    const modelName = file.slice(0, -5);
     const content = await fs.readFile(path.join(dir, file), "utf-8");
     models[modelName] = JSON.parse(content);
   }
   return models;
 };
 
-const generateAllFilesForModel = async (
-  modelName,
-  mongooseSchema,
-  parsedSchema,
-  outputDir
-) => {
+const generateAllFilesForModel = async (modelName, parsedSchema, outputDir) => {
   await generateModel(modelName, parsedSchema, outputDir);
   await generateController(modelName, parsedSchema, outputDir);
   await generateRoutes(modelName, outputDir);
@@ -59,13 +60,9 @@ const mongoEngine = {
 
     for (const [modelName, parsedSchema] of Object.entries(models)) {
       try {
-        const mongooseSchema = transformSchemaToMongooseFields(
-          parsedSchema.properties
-        );
-
         await generateAllFilesForModel(
           modelName,
-          mongooseSchema,
+
           parsedSchema,
           outputDir
         );
@@ -79,10 +76,12 @@ const mongoEngine = {
     await writeServerFile(modelNames, outputDir, true);
     await writeScaffolding(outputDir, "mongo");
 
-    const openApiModels = await loadAllOpenApiModels(path.join(outputDir, "openapi-models"));
+    const openApiModels = await loadAllOpenApiModels(
+      path.join(outputDir, "openapi-models")
+    );
     await generateOpenApi(openApiModels, outputDir);
 
-    logger.info("🎉 MongoDB API generation complete.");
+    logger.info(" MongoDB API generation complete.");
   },
 
   addModel: async (models, outputDir, existingModels) => {
@@ -98,16 +97,7 @@ const mongoEngine = {
 
     for (const [modelName, parsedSchema] of newModels) {
       try {
-        const mongooseSchema = transformSchemaToMongooseFields(
-          parsedSchema.properties
-        );
-
-        await generateAllFilesForModel(
-          modelName,
-          mongooseSchema,
-          parsedSchema,
-          outputDir
-        );
+        await generateAllFilesForModel(mongooseSchema, parsedSchema, outputDir);
         newModelNames.push(modelName);
       } catch (err) {
         logger.error(`Error adding model: ${modelName}`);
@@ -118,7 +108,9 @@ const mongoEngine = {
     if (newModelNames.length) {
       await writeServerFile([...existing, ...newModelNames], outputDir, false);
 
-      const openApiModels = await loadAllOpenApiModels(path.join(outputDir, "openapi-models"));
+      const openApiModels = await loadAllOpenApiModels(
+        path.join(outputDir, "openapi-models")
+      );
       await generateOpenApi(openApiModels, outputDir);
 
       logger.info(`Added new MongoDB model(s): ${newModelNames.join(", ")}`);

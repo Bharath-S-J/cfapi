@@ -5,13 +5,7 @@ import logger from "./logger.js";
 
 const generateId = () => faker.string.uuid();
 
-/**
- * Generate a fake value based on type and constraints.
- * @param {string} type
- * @param {string} fieldName
- * @param {object} props
- * @returns {any}
- */
+
 const generateFakeValue = (type, fieldName = "", props = {}) => {
   const field = fieldName.toLowerCase();
 
@@ -104,13 +98,7 @@ const generateFakeValue = (type, fieldName = "", props = {}) => {
   }
 };
 
-/**
- * Generate a mock object for a single schema.
- * @param {object} schema
- * @param {string} modelName
- * @param {Record<string, string[]>} idMap
- * @returns {object}
- */
+
 const generateFakeRecord = (schema, modelName, idMap) => {
   const record = {};
 
@@ -155,7 +143,7 @@ const generateFakeRecord = (schema, modelName, idMap) => {
       const refIds = idMap[props.model];
       if (!refIds) {
         logger.warn(
-          `⚠️  Reference model "${props.model}" not found for field "${field}" in "${modelName}"`
+          `⚠️⚠️  Reference model "${props.model}" not found for field "${field}" in "${modelName}"`
         );
         record[field] = null; // or generateId() if you want a dummy
       } else {
@@ -177,12 +165,7 @@ const generateFakeRecord = (schema, modelName, idMap) => {
   return record;
 };
 
-/**
- * Generate mock JSON data files for all models.
- * @param {Record<string, any>} schemas - Model schemas
- * @param {string} outDir - Output directory
- * @param {number} count - Records per model
- */
+
 const generateMockData = async (schemas, outDir, count = 10) => {
   const dataDir = path.join(outDir, "data");
   await fs.mkdir(dataDir, { recursive: true });

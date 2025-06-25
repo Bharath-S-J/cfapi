@@ -25,32 +25,30 @@ const userSchema = new Schema({
     match: /^(?=.*\d).{8,}$/
   },
   profile: new Schema({
-    bio: {
-      type: String,
-      required: true
-    },
-    dob: {
-      type: Date,
-      required: true
-    },
-    social: new Schema({
-      twitter: {
+      bio: {
         type: String,
         required: true
       },
-      linkedin: {
-        type: String,
+      dob: {
+        type: Date,
         required: true
-      }
-    })
-  }),
+      },
+      social: new Schema({
+          twitter: {
+            type: String,
+            required: true
+          },
+          linkedin: {
+            type: String,
+            required: true
+          }
+        }, { _id: false, versionKey: false })
+    }, { _id: false, versionKey: false }),
   roles: {
-    type: [
-    {
+    type: [{
         type: String
-      }
-  ],
-    validate: [v => v.length >= 1, 'Minimum 1 items required']
+      }],
+    validate: [v => v.length >= 1, "Minimum 1 items required"]
   },
   company: {
     type: Schema.Types.ObjectId,

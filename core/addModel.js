@@ -14,7 +14,7 @@ const addModel = async ({ schema, output, engine }) => {
 
     const configPath = path.join(output, CONFIG_DIR, CONFIG_NAME);
     let config = { engine, models: [] };
-
+ 
     // Step 1: Load config
     try {
       const configData = await fs.readFile(configPath, 'utf-8');

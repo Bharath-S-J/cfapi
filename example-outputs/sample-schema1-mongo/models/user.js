@@ -2,6 +2,9 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
+  id: {
+    type: String
+  },
   username: {
     type: String,
     required: true,
@@ -34,31 +37,29 @@ const userSchema = new Schema({
     maxlength: 500
   },
   tags: {
-    type: [
-    {
+    type: [{
         type: String
-      }
-  ],
-    validate: [v => v.length >= 1, 'Minimum 1 items required'],
-    validate: [v => v.length <= 5, 'Maximum 5 items allowed']
+      }],
+    validate: [v => v.length >= 1, "Minimum 1 items required"],
+    validate: [v => v.length <= 5, "Maximum 5 items allowed"]
   },
   address: new Schema({
-    street: {
-      type: String
-    },
-    city: {
-      type: String
-    },
-    postalCode: {
-      type: String,
-      match: /^[0-9]{5}$/
-    }
-  }),
+      street: {
+        type: String
+      },
+      city: {
+        type: String
+      },
+      postalCode: {
+        type: String,
+        match: /^[0-9]{5}$/
+      }
+    }, { _id: false, versionKey: false }),
   createdAt: {
     type: Date
   }
 }, {
-  timestamps: true,
+  timestamps: false,
   versionKey: false,
   toJSON: {
     virtuals: true,

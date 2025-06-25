@@ -10,17 +10,17 @@ const companySchema = new Schema({
     type: String
   },
   location: new Schema({
-    city: {
-      type: String,
-      required: true
-    },
-    country: {
-      type: String,
-      required: true
-    }
-  })
+      city: {
+        type: String,
+        required: true
+      },
+      country: {
+        type: String,
+        required: true
+      }
+    }, { _id: false, versionKey: false })
 }, {
-  timestamps: true,
+  timestamps: false,
   versionKey: false,
   toJSON: {
     virtuals: true,
